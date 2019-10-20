@@ -14,7 +14,7 @@ WIDTH=0
       --msgbox "$result" 0 0
  }
 
-carregar_menu(){
+menuInstalacao(){
 while true; do
 	exec 3>&1
 	selection=$(dialog \
@@ -94,11 +94,73 @@ while true; do
 	esac
     done			
  }
- menu_principal(){
+ MenuDadosdoSistema(){
+while true; do
+	exec 3>&1
+	selection=$(dialog \
+		--backtitle "Sistema" \
+		--title "Informações do sistema" \
+		--clear \
+		--cancel-label "Voltar" \
+		--menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
+		"1" "Processador" \
+		"2" "Memória" \
+		"3" "Barramentos" \
+		"4" " HD" \
+		2>&1 1>&3)
+	exit_status=$?
+	exec 3>&-
+	case $exit_status in
+		$DIALOG_CANCEL)
+		echo "MenuPrincipal."
+		menu_principal
+		exit
+		;;
+	$DIALOG_ESC)
+		clear
+		echo "programa abortado.">&2
+		exit 1
+		;;
+	esac
+	case $selection in
+		0 )
+		   clear
+		   echo "programa encerrado"
+		   ;;
+		1 )
+		result=$("Fabricante':" cat /proc/cpuinfo | grep vendor | uniq  \n  
+		                "Modelo:" cat /proc/cpuinfo | grep 'model name' | uniq \n  
+						"Frequencia:" cat /proc/cpuinfo | grep 'MHZ' | uniq \n  
+						"Cache: "cat /proc/cpuinfo | grep 'cache size' | sort | uniq \n  
+						"Qtd Core: "egrep "^processor" /proc/cpuinfo | wc -l \n  
+						"Cores Fisicos:" dmidecode -t4 | grep 'Core Count')
+		  display_result 
 
-   dialog --inputbox "Digite seu nome: " 0 0 2>/tmp/nome.txt
-   nome=$( cat /tmp/nome.txt )
-   result=$( cat /tmp/nome.txt )
+		2 ) 
+		    result=$("Mem Total:" cat /proc/meminfo | grep -i 'memTotal'\n
+						  "Mem Free: "cat /proc/meminfo | grep -i 'memFree'\n
+						  "Mem Available:" cat /proc/meminfo | grep -i 'memAvailable'\n
+						  "Clock Speed: "dmidecode --type 17 | grep 'MHz' | grep 'Configured Clock Speed' | uniq
+						)
+		  display_result 
+
+		3 ) 
+		  result=$("comando unico:" fdisk -l)
+		  display_result 
+
+   		4 )
+		   result=$( "Dispositivos USB:" lsusb \n
+						  "Módulos do Sistema:" lsmod \n
+						  "HardWare:" lspci -v | m
+						)
+		  display_result 
+		   ;;
+	esac
+    done	
+
+ }
+ MenuPrincipal(){
+
    display_result "Bem Vindo"
    
    while true; do
@@ -110,7 +172,7 @@ while true; do
 		--cancel-label "Sair" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
 		"1" "instalar programas" \
-		"2" "Ajuste o relógio do Sistema" \
+		"2" "Dados do Sistema" \
 		2>&1 1>&3)
 	exit_status=$?
 	exec 3>&-
@@ -132,15 +194,11 @@ while true; do
 		   echo "programa encerrado"
 		   ;;
 		1 )
-		   carregar_menu
+		  menuInstalacao
 		   ;;
 		2 ) 
-		  dialog \
-		--title "Ajuste o relogio" \
-		--timebox "Use setas e TAB" \
-		0 0 \
-		23 59 30
-		   ;;
+		  MenuDadosdoSistema
+		  	 ;;
  
    		3 )
 		   display result "Selecione 1, 2 ou 3."
@@ -149,4 +207,4 @@ while true; do
     done		
  }
  #fim das funções
-menu_principal
+MenuPrincipal
