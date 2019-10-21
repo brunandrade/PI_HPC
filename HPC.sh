@@ -102,8 +102,8 @@ while true; do
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
 		"1" "Processador" \
 		"2" "Memória" \
-		"3" "Barramentos" \
-		"4" " HD" \
+		"3" "HD" \
+		"4" " Barramentos" \
 		2>&1 1>&3)
 	exit_status=$?
 	exec 3>&-
