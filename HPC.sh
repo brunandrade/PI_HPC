@@ -1,7 +1,4 @@
 #!/bin/bash
- #while-menu:a menu-driven system information program
- #incicio
- #funções
 
 DIALOG_CANCEL=1
 DIALOG_ESC=255
@@ -123,43 +120,48 @@ while true; do
 		;;
 	esac
 	case $selection in
-		0 )
+		0)
 		   clear
 		   echo "programa encerrado"
 		   ;;
-		1 )
-		result=$("Fabricante':" cat /proc/cpuinfo | grep vendor | uniq  \n  
-		                "Modelo:" cat /proc/cpuinfo | grep 'model name' | uniq \n  
-						"Frequencia:" cat /proc/cpuinfo | grep 'MHZ' | uniq \n  
-						"Cache: "cat /proc/cpuinfo | grep 'cache size' | sort | uniq \n  
-						"Qtd Core: "egrep "^processor" /proc/cpuinfo | wc -l \n  
-						"Cores Fisicos:" dmidecode -t4 | grep 'Core Count')
-		  display_result 
-
-		2 ) 
-		    result=$("Mem Total:" cat /proc/meminfo | grep -i 'memTotal'\n
-						  "Mem Free: "cat /proc/meminfo | grep -i 'memFree'\n
-						  "Mem Available:" cat /proc/meminfo | grep -i 'memAvailable'\n
-						  "Clock Speed: "dmidecode --type 17 | grep 'MHz' | grep 'Configured Clock Speed' | uniq
-						)
-		  display_result 
-
-		3 ) 
-		  result=$("comando unico:" fdisk -l)
-		  display_result 
-
-   		4 )
-		   result=$( "Dispositivos USB:" lsusb \n
-						  "Módulos do Sistema:" lsmod \n
-						  "HardWare:" lspci -v | m
-						)
-		  display_result 
+		1)
+                    rm systeminfo.txt -r
+		            echo -e "info CPU:"  >> systeminfo.txt
+                    echo `cat /proc/cpuinfo | grep vendor | uniq` >> systeminfo.txt
+                    echo `cat /proc/cpuinfo | grep 'model name' | uniq` >> systeminfo.txt
+                    echo `cat /proc/cpuinfo | grep 'MHz' | uniq`  >> systeminfo.txt
+                    echo `cat /proc/cpuinfo | grep 'cache size' | sort | uniq` >> systeminfo.txt
+                    echo "Cores : "`egrep "^processor" /proc/cpuinfo | wc -l` >> systeminfo.txt
+                    echo `dmidecode -t4 | grep 'Core Count'` >> systeminfo.txt
+                    dialog --title 'Informações da CPU' --textbox systeminfo.txt 0 0
+          
+            ;;    
+		2) 
+            rm systeminfo.txt -r
+		    echo `cat /proc/meminfo | grep -i 'memTotal'` >> systeminfo.txt
+			echo `cat /proc/meminfo | grep -i 'memFree'` >> systeminfo.txt
+			echo `cat /proc/meminfo | grep -i 'memAvailable'` >> systeminfo.txt
+            echo `dmidecode --type 17 | grep 'MHz' | grep 'Configured Clock Speed' | uniq` >> systeminfo.txt
+            dialog --title 'Informações da Memória' --textbox systeminfo.txt 0 0
+						
+          ;;
+		3) 
+          rm systeminfo.txt -r
+		  echo `fdisk -l` >> systeminfo.txt
+          dialog --title 'Informações do HD' --textbox systeminfo.txt 0 0
+          ;;
+   		4)
+          rm systeminfo.txt -r
+		  echo `lsusb` >> systeminfo.txt
+		  echo `lsmod` >> systeminfo.txt
+		  echo `lspci -v | m` >> systeminfo.txt
+          dialog --title 'Informações dos Barramentos' --textbox systeminfo.txt 0 0
 		   ;;
 	esac
     done	
 
  }
- MenuPrincipal(){
+ menu_principal(){
 
    display_result "Bem Vindo"
    
@@ -207,4 +209,4 @@ while true; do
     done		
  }
  #fim das funções
-MenuPrincipal
+menu_principal
