@@ -313,9 +313,9 @@ fi
 		--clear \
 		--cancel-label "Sair" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
-		"1" "instalar programas" \
-		"2" "Arquitetura computacional" \
-		"3" "configurações de redes(Avançado)" \
+		"1" "instalação pacotes" \
+	    "2" "configurações de redes(Avançado)" \
+		"3" "Informações de arquitetura computacional" \
 		2>&1 1>&3)
 	exit_status=$?
 	exec 3>&-
@@ -339,11 +339,11 @@ fi
 		1 )
 			 menuInstalacao
 			 ;;
-		2 ) 
-		 	 MenuDadosdoSistema
-		  	 ;;
-		3) 
+		2) 
 			menu_OpcoesRedes
+		  	 ;;
+		3 ) 
+		 	 MenuDadosdoSistema
 		  	 ;;
 
 	esac
