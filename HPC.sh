@@ -202,7 +202,7 @@ MenuConfiguracoesdoFrewall(){
 		--backtitle "opções do sistema" \
 		--title "Menu" \
 		--clear \
-		--cancel-label "Sair" \
+		--cancel-label "Voltar" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
 		"1" "Ativar firewall" \
 		"2" "desativar firewall" \
@@ -212,8 +212,7 @@ MenuConfiguracoesdoFrewall(){
 	case $exit_status in
 		$DIALOG_CANCEL)
 		clear
-		echo "programa encerrado."
-		exit
+		menu_principal
 		;;
 	$DIALOG_ESC)
 		clear
