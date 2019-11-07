@@ -10,6 +10,13 @@ WIDTH=0
       --no-collapse \
       --msgbox "$result" 0 0
  }
+ YesOrnoBox(){
+	if (whiptail --title "$1" --yesno "$2" 10 60) then
+	    echo "Você escolheu Sim. Saída com status $?."
+	else
+	    echo "Você escolheu Não. Saída com status $?."
+	fi
+ }
 
 menuInstalacao(){
 while true; do
@@ -171,12 +178,12 @@ fi
  }
 
 MenuConfiguracoesdoFrewall(){
-if (whiptail --title "AlertaMenuConfiguracoesdoFrewall" --yesno "pergunta" 10 60) then
-    echo "Você escolheu Sim. Saída com status $?."
-else
-    echo "Você escolheu Não. Saída com status $?."
-fi
- }
+	 if ! instalado=$(dpkg --get-selections | grep -c squid3)
+	then
+		YesOrnoBox "Alerta" "Deseja instalar Squid?"
+	fi
+	# echo "Instalação finalizada"
+}
 
   MenuComunicaçãoderedes(){
 if (whiptail --title "AlertaMenuComunicaçãoderedes" --yesno "pergunta" 10 60) then
