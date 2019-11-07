@@ -195,12 +195,12 @@ DesativarFirewallBox(){
     echo "Você escolheu Não. Saída com status $?."
 	fi
 }
-MenuConfiguracoesdoFrewall(){
+MenuConfiguracoesdoFirewall(){
    while true; do
 	exec 3>&1
 	selection=$(dialog \
 		--backtitle "opções do sistema" \
-		--title "Menu" \
+		--title "Opções de firewall" \
 		--clear \
 		--cancel-label "Voltar" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
@@ -212,7 +212,7 @@ MenuConfiguracoesdoFrewall(){
 	case $exit_status in
 		$DIALOG_CANCEL)
 		clear
-		menu_principal
+		menu_OpcoesRedes
 		;;
 	$DIALOG_ESC)
 		clear
@@ -251,6 +251,56 @@ else
     echo "Você escolheu Não. Saída com status $?."
 fi
  }
+
+ menu_OpcoesRedes(){
+	    while true; do
+	exec 3>&1
+	selection=$(dialog \
+		--backtitle "opções do sistema" \
+		--title "Menu" \
+		--clear \
+		--cancel-label "Voltar" \
+		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
+		"1" "Controle de tráfego" \
+		"2" "Configurações do Frewall" \
+		"3" "Comunicação de redes" \
+	    "4" "Configuração de proxy" \
+		2>&1 1>&3)
+	exit_status=$?
+	exec 3>&-
+	case $exit_status in
+		$DIALOG_CANCEL)
+		menu_principal
+		;;
+	$DIALOG_ESC)
+		clear
+		echo "programa abortado.">&2
+		exit 1
+		;;
+	esac
+	case $selection in
+		0 )
+		   clear
+		   echo "programa encerrado"
+		   ;;
+
+		1) 
+			MenuControledeTrafego
+		  	 ;;
+		2) 
+		 	MenuConfiguracoesdoFirewall
+		  	 ;;
+		3) 
+		 	MenuComunicaçãoderedes
+		  	;;
+ 
+   		4)
+		    MenuConfiguraçãodeProxy
+		   ;;
+	esac
+    done		
+
+ }
  menu_principal(){
 
 #    display_result "Bem Vindo"
@@ -259,16 +309,13 @@ fi
 	exec 3>&1
 	selection=$(dialog \
 		--backtitle "opções do sistema" \
-		--title "Menu" \
+		--title "Menu principal" \
 		--clear \
 		--cancel-label "Sair" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
 		"1" "instalar programas" \
 		"2" "Arquitetura computacional" \
-		"3" "Controle de tráfego" \
-		"4" "Configurações do Frewall" \
-		"5" "Comunicação de redes" \
-	    "6" "Configuração de proxy" \
+		"3" "configurações de redes(Avançado)" \
 		2>&1 1>&3)
 	exit_status=$?
 	exec 3>&-
@@ -296,18 +343,9 @@ fi
 		 	 MenuDadosdoSistema
 		  	 ;;
 		3) 
-			MenuControledeTrafego
+			menu_OpcoesRedes
 		  	 ;;
-		4) 
-		 	MenuConfiguracoesdoFrewall
-		  	 ;;
-		5) 
-		 	MenuComunicaçãoderedes
-		  	;;
- 
-   		6 )
-		    MenuConfiguraçãodeProxy
-		   ;;
+
 	esac
     done		
  }
