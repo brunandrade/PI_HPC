@@ -313,9 +313,8 @@ fi
 		--clear \
 		--cancel-label "Sair" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
-		"1" "instalação pacotes" \
-	    "2" "configurações de redes(Avançado)" \
-		"3" "Informações de arquitetura computacional" \
+	    "1" "configurações de redes(Avançado)" \
+		"2" "Informações de arquitetura computacional" \
 		2>&1 1>&3)
 	exit_status=$?
 	exec 3>&-
@@ -336,13 +335,10 @@ fi
 		   clear
 		   echo "programa encerrado"
 		   ;;
-		1 )
-			 menuInstalacao
-			 ;;
-		2) 
+		1) 
 			menu_OpcoesRedes
 		  	 ;;
-		3 ) 
+		2 ) 
 		 	 MenuDadosdoSistema
 		  	 ;;
 
