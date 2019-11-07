@@ -134,15 +134,15 @@ while true; do
 		   echo "programa encerrado"
 		   ;;
 		1)
-                    rm systeminfo.txt -r
-		            echo -e "info CPU:"  >> systeminfo.txt
-                    echo `cat /proc/cpuinfo | grep vendor | uniq` >> systeminfo.txt
-                    echo `cat /proc/cpuinfo | grep 'model name' | uniq` >> systeminfo.txt
-                    echo `cat /proc/cpuinfo | grep 'MHz' | uniq`  >> systeminfo.txt
-                    echo `cat /proc/cpuinfo | grep 'cache size' | sort | uniq` >> systeminfo.txt
-                    echo "Cores : "`egrep "^processor" /proc/cpuinfo | wc -l` >> systeminfo.txt
-                    echo `dmidecode -t4 | grep 'Core Count'` >> systeminfo.txt
-                    dialog --title 'Informações da CPU' --textbox systeminfo.txt 0 0
+            rm systeminfo.txt -r
+		    echo -e "info CPU:"  >> systeminfo.txt
+            echo `cat /proc/cpuinfo | grep vendor | uniq` >> systeminfo.txt
+            echo `cat /proc/cpuinfo | grep 'model name' | uniq` >> systeminfo.txt
+            echo `cat /proc/cpuinfo | grep 'MHz' | uniq`  >> systeminfo.txt
+            echo `cat /proc/cpuinfo | grep 'cache size' | sort | uniq` >> systeminfo.txt
+            echo "Cores : "`egrep "^processor" /proc/cpuinfo | wc -l` >> systeminfo.txt
+            echo `dmidecode -t4 | grep 'Core Count'` >> systeminfo.txt
+            dialog --title 'Informações da CPU' --textbox systeminfo.txt 0 0
           
             ;;    
 		2) 
@@ -244,6 +244,13 @@ else
     echo "Você escolheu Não. Saída com status $?."
 fi
  }
+ MenuConfiguraçãodeProxy(){
+if (whiptail --title "AlertaMenuComunicaçãoderedes" --yesno "pergunta" 10 60) then
+    echo "Você escolheu Sim. Saída com status $?."
+else
+    echo "Você escolheu Não. Saída com status $?."
+fi
+ }
  menu_principal(){
 
 #    display_result "Bem Vindo"
@@ -261,6 +268,7 @@ fi
 		"3" "Controle de tráfego" \
 		"4" "Configurações do Frewall" \
 		"5" "Comunicação de redes" \
+	    "6" "Configuração de proxy" \
 		2>&1 1>&3)
 	exit_status=$?
 	exec 3>&-
@@ -282,10 +290,10 @@ fi
 		   echo "programa encerrado"
 		   ;;
 		1 )
-		  menuInstalacao
-		   ;;
+			 menuInstalacao
+			 ;;
 		2 ) 
-		  MenuDadosdoSistema
+		 	 MenuDadosdoSistema
 		  	 ;;
 		3) 
 			MenuControledeTrafego
@@ -294,11 +302,11 @@ fi
 		 	MenuConfiguracoesdoFrewall
 		  	 ;;
 		5) 
-		 MenuComunicaçãoderedes
+		 	MenuComunicaçãoderedes
 		  	;;
  
    		6 )
-		   display result "Selecione 1, 2 ou 3."
+		    MenuConfiguraçãodeProxy
 		   ;;
 	esac
     done		
