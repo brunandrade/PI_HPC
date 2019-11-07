@@ -163,7 +163,7 @@ while true; do
           rm systeminfo.txt -r
 		  echo `lsusb` >> systeminfo.txt
 		  echo `lsmod` >> systeminfo.txt
-		  echo `lspci -v | m` >> systeminfo.txt
+		  echo `lspci -v` >> systeminfo.txt
           dialog --title 'Informações dos Barramentos' --textbox systeminfo.txt 0 0
 		   ;;
 	esac
