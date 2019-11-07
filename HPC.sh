@@ -108,7 +108,7 @@ while true; do
 		--clear \
 		--cancel-label "Voltar" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
-		"1" "Processador" \
+		"1" "CPU" \
 		"2" "Memória" \
 		"3" "HD" \
 		"4" " Barramentos" \
@@ -162,7 +162,7 @@ while true; do
           rm systeminfo.txt -r
 		  echo `lsusb` >> systeminfo.txt
 		  echo `lsmod` >> systeminfo.txt
-		  echo `lspci -v | m` >> systeminfo.txt
+		  echo `lspci -v` >> systeminfo.txt
           dialog --title 'Informações dos Barramentos' --textbox systeminfo.txt 0 0
 		   ;;
 	esac
