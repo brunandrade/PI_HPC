@@ -109,7 +109,7 @@ while true; do
 		--clear \
 		--cancel-label "Voltar" \
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 4 \
-		"1" "Processador" \
+		"1" "CPU" \
 		"2" "Memória" \
 		"3" "HD" \
 		"4" " Barramentos" \
