@@ -8,13 +8,15 @@ WIDTH=0
  display_result() {
   dialog --title "$1" \
       --no-collapse \
-      --msgbox "$result" 0 0
+      --msgbox "$2" 0 0
  }
  YesOrnoBox(){
-	if (whiptail --title "$1" --yesno "$2" 10 60) then
-	    echo "Você escolheu Sim. Saída com status $?."
+	 $1
+	if (whiptail --title "$2" --yesno "$3" 10 60) then
+		apt-get install $1
+	    display_result "$1 instalado"
 	else
-	    echo "Você escolheu Não. Saída com status $?."
+	   display_result "$1 não instalado"
 	fi
  }
 
@@ -170,22 +172,73 @@ while true; do
  }
 
 MenuControledeTrafego(){
-if (whiptail --title "Alerta" --yesno "Tem IpTables instalado?" 10 60) then
-    echo "Você escolheu Sim. Saída com status $?."
-else
+	if (whiptail --title "Alerta" --yesno "Deseja iniciar captura de pacotes?" 10 60) then
+		result=$(tcpdump -s 0 -i any -w honest-sample.pcap)
+    	display_result "Capturando pacotes aperte Ctrl+c para sair"
+	else
     echo "Você escolheu Não. Saída com status $?."
-fi
- }
-
-MenuConfiguracoesdoFrewall(){
-	 if ! instalado=$(dpkg --get-selections | grep -c squid3)
-	then
-		YesOrnoBox "Alerta" "Deseja instalar Squid?"
 	fi
-	# echo "Instalação finalizada"
+ }
+AtivarFirewallBox(){
+	if (whiptail --title "Alerta" --yesno "Deseja ativar Firewall?" 10 60) then
+		bash iptables.sh start
+    	display_result "Alerta!" "firewall ativo"
+	else
+    echo "Você escolheu Não. Saída com status $?."
+	fi
+}
+DesativarFirewallBox(){
+	if (whiptail --title "Alerta!" --yesno "Deseja desativar Firewall?" 10 60) then
+		bash iptables.sh stop
+    	display_result "Alerta" "firewall desativado"
+	else
+    echo "Você escolheu Não. Saída com status $?."
+	fi
+}
+MenuConfiguracoesdoFrewall(){
+   while true; do
+	exec 3>&1
+	selection=$(dialog \
+		--backtitle "opções do sistema" \
+		--title "Menu" \
+		--clear \
+		--cancel-label "Sair" \
+		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
+		"1" "Ativar firewall" \
+		"2" "desativar firewall" \
+		2>&1 1>&3)
+	exit_status=$?
+	exec 3>&-
+	case $exit_status in
+		$DIALOG_CANCEL)
+		clear
+		echo "programa encerrado."
+		exit
+		;;
+	$DIALOG_ESC)
+		clear
+		echo "programa abortado.">&2
+		exit 1
+		;;
+	esac
+	case $selection in
+		0 )
+		   clear
+		   echo "programa encerrado"
+		   ;;
+		1 )
+		  AtivarFirewallBox
+		   ;;
+		2 ) 
+		  DesativarFirewallBox
+		  	 ;;
+ 
+	esac
+    done	
+
 }
 
-  MenuComunicaçãoderedes(){
+MenuComunicaçãoderedes(){
 if (whiptail --title "AlertaMenuComunicaçãoderedes" --yesno "pergunta" 10 60) then
     echo "Você escolheu Sim. Saída com status $?."
 else
@@ -236,7 +289,7 @@ fi
 		  MenuDadosdoSistema
 		  	 ;;
 		3) 
-		  MenuControledeTrafego
+			MenuControledeTrafego
 		  	 ;;
 		4) 
 		 	MenuConfiguracoesdoFrewall
