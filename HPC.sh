@@ -11,12 +11,11 @@ WIDTH=0
       --msgbox "$2" 0 0
  }
  YesOrnoBox(){
-	 $1
-	if (whiptail --title "$2" --yesno "$3" 10 60) then
+	if (whiptail --title "$1" --yesno "o sistema não possui $1. Deseja instalar?" 10 60) then
 		apt-get install $1
-	    display_result "$1 instalado"
+	    display_result "Alerta" "$1 instalado"
 	else
-	   display_result "$1 não instalado"
+	   display_result "Alerta" "$1 não instalado"
 	fi
  }
 
@@ -245,11 +244,13 @@ else
 fi
  }
  MenuConfiguraçãodeProxy(){
-if (whiptail --title "AlertaMenuComunicaçãoderedes" --yesno "pergunta" 10 60) then
-    echo "Você escolheu Sim. Saída com status $?."
+
+if (!dpkg --get-selections | grep squid3) then
+	YesOrnoBox "squid3"
 else
-    echo "Você escolheu Não. Saída com status $?."
+	echo "Você escolheu Não. Saída com status $?."
 fi
+
  }
 
  menu_OpcoesRedes(){
