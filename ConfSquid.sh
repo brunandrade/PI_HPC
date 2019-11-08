@@ -1,5 +1,4 @@
 #!/bin/bash
-#Autor: André Souza
 echo "INSTALAÇÂO AUTOMATICA SERVIDOR PROXY"
 #echo "EXECUTAR SCRIPT[S/n]"
 #read sim
