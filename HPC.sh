@@ -16,6 +16,7 @@ WIDTH=0
 	    display_result "Alerta" "$1 instalado"
 	else
 	   display_result "Alerta" "$1 não instalado"
+	   menu_OpcoesRedes
 	fi
  }
 
@@ -169,15 +170,20 @@ while true; do
     done	
 
  }
-
+ YesOrnoBoxProxy(){
+	if (whiptail --title "Alerta" --yesno "Deseja configurar squid?" 10 60) then
+		bash ConfSquid.sh 
+		display_result "Alerta!" "squid configurado com sucesso"
+	else
+	   display_result "Alerta" "$1 não instalado"
+	fi
+ }
  MenuConfiguraçãodeProxy(){
 
 if (!dpkg --get-selections | grep squid) then
-	YesOrnoBox "squid"
-else
-	bash ConfSquid.sh 
-	display_result "Alerta!" "squid configurado com sucesso"
+	YesOrnoBox "squid"	
 fi
+	YesOrnoBoxProxy
 
  }
 
