@@ -161,10 +161,7 @@ while true; do
           ;;
    		4)
           rm systeminfo.txt -r
-		  echo `lsusb` >> systeminfo.txt
-		  echo `lsmod` >> systeminfo.txt
-		  echo `lspci -v` >> systeminfo.txt
-          dialog --title 'Informações dos Barramentos' --textbox systeminfo.txt 0 0
+		  dialog --title 'Barramento' --msgbox "`lsusb`" 0 0
 		   ;;
 	esac
     done	
