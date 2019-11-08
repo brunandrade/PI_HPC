@@ -1,4 +1,5 @@
 #!/bin/bash
+#Autor: André Souza
 echo "INSTALAÇÂO AUTOMATICA SERVIDOR PROXY"
 #echo "EXECUTAR SCRIPT[S/n]"
 #read sim
@@ -56,19 +57,22 @@ echo "#acl chefe src 192.168.2.2" >> /etc/squid/squid.conf
 echo "#http_access allow chefe" >> /etc/squid/squid.conf
 echo >> /etc/squid/squid.conf
 echo "#Bloqueio por dominios (Os digitados no browser)" >> /etc/squid/squid.conf
-echo "#acl bloqueados dstdomain www.xvideos.com www.gmail.com www.facebook.com" >> /etc/squid/squid.conf
+echo "#acl bloqueados dstdomain www.orkut.com.br www.uol.com.br www.terra.com.br" >> /etc/squid/squid.conf
 echo "#http_access deny bloqueados" >> /etc/squid/squid.conf
 echo >> /etc/squid/squid.conf
 echo "#Desbloquendo dominio no horario almoço" >> /etc/squid/squid.conf
-echo "acl almoço time 12:00-13:00" >> /etc/squid/squid.conf
-echo "acl uol dstdomain www.uol.com.br uol.com uol.com.br" >> /etc/squid/squid.conf
-echo "http_access allow uol almoço" >> /etc/squid/squid.conf
-echo "http_access deny uol" >> /etc/squid/squid.conf
+echo "#acl almoço time 14:00-14:0" >> /etc/squid/squid.conf
+echo "#acl uol dstdomain www.uol.com.br uol.com uol.com.br" >> /etc/squid/squid.conf
+echo "#http_access allow uol almoço" >> /etc/squid/squid.conf
+echo "#http_access deny uol" >> /etc/squid/squid.conf
 echo >> /etc/squid/squid.conf
-touch /etc/squid/dominio.block
+echo "#Bloqueio por horario" >> /etc/squid/squid.conf
+echo "#acl almoço time 13:35-13:40" >> /etc/squid/squid.conf
+echo "#http_access allow  almoço " >> /etc/squid/squid.conf
+echo >> /etc/squid/squid.conf
 echo "#Bloqueio de dominios usando arquivo de texto" >> /etc/squid/squid.conf
-echo "acl bloqueados url_regex -i "/etc/squid/dominio.block" " >> /etc/squid/squid.conf
-echo "http_access deny bloqueados" >> /etc/squid/squid.conf
+echo "#acl bloqueados url_regex -i "/etc/squid/dominio.block" " >> /etc/squid/squid.conf
+echo "#http_access deny bloqueados" >> /etc/squid/squid.conf
 echo >> /etc/squid/squid.conf
 echo "#Permitindo somente dominios especificos" >> /etc/squid/squid.conf
 echo "#acl permitidos url_regex -i "/etc/squid/dominio.allow" " >> /etc/squid/squid.conf
@@ -80,7 +84,6 @@ echo "#acl ips-bloqueados dst 200.234.21.23 200.212.15.45" >> /etc/squid/squid.c
 echo "#http_access deny ips-bloqueados" >> /etc/squid/squid.conf
 echo >> /etc/squid/squid.conf
 echo "#Bloqueando palavras nas urls (tudo digitado)" >> /etc/squid/squid.conf
-      #touch /etc/squid/palavras.block
 echo "#acl palavrasblock dstdom_regex "/etc/squid/palavras.block" " >> /etc/squid/squid.conf
 echo "#http_access deny palavrasblock" >> /etc/squid/squid.conf
 echo >> /etc/squid/squid.conf
