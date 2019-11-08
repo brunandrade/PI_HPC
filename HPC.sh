@@ -170,6 +170,17 @@ while true; do
 
  }
 
+ MenuConfiguraçãodeProxy(){
+
+if (!dpkg --get-selections | grep squid) then
+	YesOrnoBox "squid"
+else
+	bash ConfSquid.sh 
+	display_result "Alerta!" "squid configurado com sucesso"
+fi
+
+ }
+
 MenuControledeTrafego(){
 	if (whiptail --title "Alerta" --yesno "Deseja iniciar captura de pacotes?" 10 60) then
 		result=$(tcpdump -s 0 -i any -G 15 -W 1 -w controledetrafego.pcap )
