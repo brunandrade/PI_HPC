@@ -100,7 +100,7 @@ while true; do
     done			
  }
  MenuDadosdoSistema(){
-while true; do
+  while true; do
 	exec 3>&1
 	selection=$(dialog \
 		--backtitle "Sistema" \
@@ -237,20 +237,24 @@ MenuConfiguracoesdoFirewall(){
 }
 
 MenuComunicaçãoderedes(){
-if (whiptail --title "AlertaMenuComunicaçãoderedes" --yesno "pergunta" 10 60) then
-    echo "Você escolheu Sim. Saída com status $?."
-else
-    echo "Você escolheu Não. Saída com status $?."
-fi
- }
- MenuConfiguraçãodeProxy(){
+	rm Infrainfo.txt -r
+    # Pega o número de MAC ADDRESS da placa de rede.
+    echo `ifconfig $i | grep eth | cut -d" " -f16 ` >> Infrainfo.txt
 
-if (!dpkg --get-selections | grep squid3) then
-	YesOrnoBox "squid3"
-else
-	echo "Você escolheu Não. Saída com status $?."
-fi
 
+	ip=`ifconfig eno1 | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | tail -3 | head -1`
+	bcast=`ifconfig eno1 | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | tail -2 | head -1`
+	mask=`ifconfig eno1 | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | tail -1 | head -1`
+	#mac=`ifconfig $1 | grep HW | cut -d"W" -f2`
+	mac=`ifconfig eno1 | grep -o "[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}\{1,2\}"`
+	rx=`ifconfig eno1 | grep -o "(*.\{9\})" | cut -d"(" -f2 | cut -d ")" -f1 | tail -2 | head -1`
+	tx=`ifconfig eno1 | grep -o "(*.\{9\})" | cut -d"(" -f2 | cut -d ")" -f1 | tail -1`
+    
+	echo "Mac:"$mac >> Infrainfo.txt
+	echo "Ip:"$ip >> Infrainfo.txt
+	echo "Máscara:"$mask >> Infrainfo.txt
+
+	 dialog --title '       Dados de rede' --textbox Infrainfo.txt 0 0
  }
 
  menu_OpcoesRedes(){
@@ -264,7 +268,7 @@ fi
 		--menu "Selecione uma opção:" $HEIGHT $WIDTH 0 \
 		"1" "Controle de tráfego" \
 		"2" "Configurações do Frewall" \
-		"3" "Comunicação de redes" \
+		"3" "informações de rede" \
 	    "4" "Configuração de proxy" \
 		2>&1 1>&3)
 	exit_status=$?
