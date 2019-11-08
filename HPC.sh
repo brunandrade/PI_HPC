@@ -172,7 +172,7 @@ while true; do
 
 MenuControledeTrafego(){
 	if (whiptail --title "Alerta" --yesno "Deseja iniciar captura de pacotes?" 10 60) then
-		result=$(tcpdump -s 0 -i any -w honest-sample.pcap)
+		result=$(tcpdump -s 0 -i any -G 15 -W 1 -w controledetrafego.pcap )
     	display_result "Capturando pacotes aperte Ctrl+c para sair"
 	else
     echo "Você escolheu Não. Saída com status $?."
