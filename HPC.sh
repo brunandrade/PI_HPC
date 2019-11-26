@@ -136,12 +136,14 @@ while true; do
 		1)
             rm systeminfo.txt -r
 		    echo -e "info CPU:"  >> systeminfo.txt
+			echo 'Kernel : '`uname -r` >> systeminfo.txt
             echo `cat /proc/cpuinfo | grep vendor | uniq` >> systeminfo.txt
             echo `cat /proc/cpuinfo | grep 'model name' | uniq` >> systeminfo.txt
-            echo `cat /proc/cpuinfo | grep 'MHz' | uniq`  >> systeminfo.txt
             echo `cat /proc/cpuinfo | grep 'cache size' | sort | uniq` >> systeminfo.txt
-            echo "Cores : "`egrep "^processor" /proc/cpuinfo | wc -l` >> systeminfo.txt
             echo `dmidecode -t4 | grep 'Core Count'` >> systeminfo.txt
+            echo "Cores : "`egrep "^processor" /proc/cpuinfo | wc -l` >> systeminfo.txt
+			freq=`cat /proc/cpuinfo | grep -i 'mhz' | uniq`
+            echo "$freq"  >> systeminfo.txt
             dialog --title 'Informações da CPU' --textbox systeminfo.txt 0 0
           
             ;;    
