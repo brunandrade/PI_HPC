@@ -77,7 +77,7 @@ while true; do
 		   	clear  
 	         fi
 		   else
-        		display_result "squid3 não instalado"
+        		display_result "IPTABLES não instalado"
 		   fi
 		   ;;
 		3 ) 
@@ -91,7 +91,7 @@ while true; do
 		   	clear  
 	         fi
 		   else
-        		display_result "squid3 não instalado"
+        		display_result "VIM não instalado"
 		   fi
 		   ;;  
    		4 )
