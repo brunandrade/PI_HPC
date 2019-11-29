@@ -1,3 +1,23 @@
+## Funcionalidades
+
+O presente repositório foi utilizado como método avaliativo do Projeto Integrado 2 da turma de Engenharia de Computação do Centro Universitário SENAI CIMATEC pelos componentes:
+
+[Bruna Andrade](https://www.github.com/brunandrade) 
+
+[Gabriel Luiz](https://www.github.com/gabrielluiz97) 
+
+[Leonardo Sena](https://www.github.com/leosena21)
+
+[Lucas Cassimiro](https://www.github.com/ccassimiro)
+
+[Tarcio Carvalho](https://www.github.com/Tarcioc2)
+
+
+O script criado em Shell traz utilizando Dialog informações sobre CPU, Memória, HD e Barramento. Além de configurar proxy(Squid) e Firewall(Iptables).
+
+Caso o usuário deseje realizar o bloqueio de mais algum site pelo Proxy, é necessário alteração no arquivo `bad-sites.acl` .
+
+
 
 ## Criação de chave publica e privada SSH
 
