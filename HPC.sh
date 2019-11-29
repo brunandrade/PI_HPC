@@ -77,7 +77,7 @@ while true; do
 		   	clear  
 	         fi
 		   else
-        		display_result "squid3 não instalado"
+        		display_result "IPTABLES não instalado"
 		   fi
 		   ;;
 		3 ) 
@@ -91,7 +91,7 @@ while true; do
 		   	clear  
 	         fi
 		   else
-        		display_result "squid3 não instalado"
+        		display_result "VIM não instalado"
 		   fi
 		   ;;  
    		4 )
@@ -258,17 +258,15 @@ MenuComunicaçãoderedes(){
     echo `ifconfig $i | grep eth | cut -d" " -f16 ` >> Infrainfo.txt
 
 
-	ip=`ifconfig eno1 | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | tail -3 | head -1`
-	bcast=`ifconfig eno1 | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | tail -2 | head -1`
-	mask=`ifconfig eno1 | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" | tail -1 | head -1`
 	#mac=`ifconfig $1 | grep HW | cut -d"W" -f2`
-	mac=`ifconfig eno1 | grep -o "[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}.[0-9A-F]\{2\}\{1,2\}"`
-	rx=`ifconfig eno1 | grep -o "(*.\{9\})" | cut -d"(" -f2 | cut -d ")" -f1 | tail -2 | head -1`
-	tx=`ifconfig eno1 | grep -o "(*.\{9\})" | cut -d"(" -f2 | cut -d ")" -f1 | tail -1`
+	mac=`cat /sys/class/net/wlp0s20f3/address`
+
+	wlp0s20f3=`ifconfig | grep 'inet' | grep 'broadcast'`
+
     
 	echo "Mac:"$mac >> Infrainfo.txt
-	echo "Ip:"$ip >> Infrainfo.txt
-	echo "Máscara:"$mask >> Infrainfo.txt
+	echo "wlp0s20f3:"$wlp0s20f3 >> Infrainfo.txt
+
 
 	 dialog --title '       Dados de rede' --textbox Infrainfo.txt 0 0
  }

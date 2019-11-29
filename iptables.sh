@@ -1,30 +1,57 @@
 #!/bin/bash
-#  firewall script com iptables
-#
-#  Copyright 2015 T4K3D0WN <takedown@outlook.com.br>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#
-#
+
+function IniciaFirewall(){
+# Bloc everything by default
+sudo iptables -t filter -P INPUT DROP
+sudo iptables -t filter -P FORWARD DROP
+sudo iptables -t filter -P OUTPUT DROP
+
+# Authorize already established connexions
+sudo iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -t filter -A INPUT -i lo -j ACCEPT
+sudo iptables -t filter -A OUTPUT -o lo -j ACCEPT
+
+# ICMP (Ping)
+sudo iptables -t filter -A INPUT -p icmp -j ACCEPT
+sudo iptables -t filter -A OUTPUT -p icmp -j ACCEPT
+
+# SSH
+sudo iptables -t filter -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -t filter -A OUTPUT -p tcp --dport 22 -j ACCEPT
+
+# DNS
+sudo iptables -t filter -A OUTPUT -p tcp --dport 53 -j ACCEPT
+sudo iptables -t filter -A OUTPUT -p udp --dport 53 -j ACCEPT
+sudo iptables -t filter -A INPUT -p tcp --dport 53 -j ACCEPT
+sudo iptables -t filter -A INPUT -p udp --dport 53 -j ACCEPT
+
+# HTTP
+sudo iptables -t filter -A OUTPUT -p tcp --dport 80 -j DROP
+sudo iptables -t filter -A INPUT -p tcp --dport 80 -j DROP
+
+#HTTPS
+sudo iptables -t filter -A OUTPUT -p tcp --dport 443 -j ACCEPT
+sudo iptables -t filter -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# FTP
+sudo iptables -t filter -A OUTPUT -p tcp --dport 20:21 -j ACCEPT
+sudo iptables -t filter -A INPUT -p tcp --dport 20:21 -j ACCEPT
+
+# Git
+sudo iptables -t filter -A OUTPUT -p tcp --dport 9418 -j ACCEPT
+sudo iptables -t filter -A INPUT -p tcp --dport 9418 -j ACCEPT
 
 
 
-modprobe ip_tables
 
+}
 
+function ParaFirewall(){
+# Empty all rules
+DesativaProtecao
+LimpaRegras
+}
 function LimpaRegras(){
 echo -n "Limpando regras ........................................... "
  # Limpando as Chains
@@ -50,13 +77,6 @@ echo -n "Limpando regras ........................................... "
 }
 
 
-
-function AtivaPing(){
- echo -n "Ativando resposta do ping ................................. "
- echo "0" > /proc/sys/net/ipv4/icmp_echo_ignore_all
-}
-
-
 function DesativaProtecao(){
  echo -n "Removendo regras de proteção .............................. "
  i=/proc/sys/net/ipv4
@@ -71,205 +91,6 @@ function DesativaProtecao(){
    echo "0" > $i/rp_filter
  done
 }
-
-function limpatabelas(){
-echo -n "Limpando regras ........................................... "
-# limpando tabelas
-iptables -F
-iptables -X
-iptables -t nat -F
-iptables -t nat -X
-}
-
-function ativaprotecao(){
-echo -n "Ativando protecao ......................................... "
-# Ativando algumas coisas básicas do kernel
-echo 1 > /proc/sys/net/ipv4/tcp_syncookies                     # Abilitar o uso de syncookies (muito útil para evitar SYN flood attacks)
-echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_all               # desabilita o "ping" (Mensagens ICMP) para sua máquina
-echo 0 > /proc/sys/net/ipv4/conf/all/accept_redirects          # Não aceite redirecionar pacotes ICMP
-echo 1 > /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses  # Ative a proteção contra respostas a mensagens de erro falsas
-echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts        # Evita a peste do Smurf Attack e alguns outros de redes locais
-}
-function politicaspadrao(){
-echo -n "Configurando padrao ....................................... "
-# Configurando as políticas padrões
-iptables -P INPUT DROP
-iptables -P OUTPUT DROP
-iptables -P FORWARD DROP
-
-# Loga/Adiciona/Descarta hosts da lista "SUSPEITO" (cuja conexão não cumpre nenhuma das regras acima) {deixe como última regra!}
-iptables -A INPUT -p tcp --dport=20 -j LOG --log-level warning --log-prefix "[firewall] [ftp]"
-iptables -A INPUT -p udp --dport=20 -j LOG --log-level warning --log-prefix "[firewall] [ftp]"
-iptables -A INPUT -p tcp --dport=21 -j LOG --log-level warning --log-prefix "[firewall] [ftp]"
-iptables -A INPUT -p udp --dport=21 -j LOG --log-level warning --log-prefix "[firewall] [ftp]"
-iptables -A INPUT -p tcp --dport=22 -j LOG --log-level warning --log-prefix "[firewall] [ssh]"
-iptables -A INPUT -p udp --dport=22 -j LOG --log-level warning --log-prefix "[firewall] [ssh]"
-iptables -A INPUT -p tcp --dport=23 -j LOG --log-level warning --log-prefix "[firewall] [telnet]"
-iptables -A INPUT -p udp --dport=23 -j LOG --log-level warning --log-prefix "[firewall] [telnet]"
-iptables -A INPUT -p icmp  -j LOG --log-level warning --log-prefix "[firewall] [ping]"
-}
-
-function permitirloop(){
-echo -n "Permitindo loopback ....................................... "
-# Permitindo loopback
-iptables -A INPUT -i lo -j ACCEPT
-iptables -A OUTPUT -o lo -j ACCEPT
-
-# Permite o estabelecimento de novas conexões iniciadas por você // coração do firewall //
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED,NEW -j ACCEPT
-}
-function dns(){
-echo -n "Ativando dns .............................................. "
-# Libera o acesso do DNS (troque pelo seu, caso não use o DNS do google. Caso não saiba exclua a opção -s apagando até antes do -j)
-iptables -A INPUT -p udp --sport 53  -j ACCEPT
-iptables -A INPUT -p udp --sport 53  -j ACCEPT
-
-# Liberando portas de serviços externos (descomente e altere conforme sua necessidade)
-#iptables -A INPUT -p tcp -m multiport --dport 21,22,53,80,443,3128,8080 -j ACCEPT
-
-#--- Criando listas de bloqueios
-
-# Descarta pacotes reincidentes/persistentes da lista SUSPEITO (caso tenha 5 entradas ficará 1H em DROP / caso tenha 10 ficará 24H em DROP)
-iptables -A INPUT -m recent --update --hitcount 10 --name SUSPEITO --seconds 86400 -j DROP
-iptables -A INPUT -m recent --update --hitcount 5 --name SUSPEITO --seconds 3600 -j DROP
-
-# Descarta pacotes reincidentes/persistentes da lista SYN-DROP (caso tenha 5 entradas ficará 1H em DROP / caso tenha 10 ficará 24H em DROP)
-iptables -A INPUT -m recent --update --hitcount 10 --name SYN-DROP --seconds 86400 -j DROP
-iptables -A INPUT -m recent --update --hitcount 5 --name SYN-DROP --seconds 3600 -j DROP
-}
-function criachain(){
-echo -n "criando chains ............................................ "
-# Cria a CHAIN "SYN"
-iptables -N SYN
-iptables -A SYN -m limit --limit 10/min --limit-burst 3 -j LOG --log-level warning --log-prefix "[firewall] [SYN: DROP]"
-iptables -A SYN -m limit --limit 10/min --limit-burst 3 -m recent --set --name SYN-DROP -j DROP
-iptables -A SYN -m limit --limit 1/min --limit-burst 1 -j LOG --log-level warning --log-prefix "[firewall] [SYN: FLOOD!]"
-iptables -A SYN -j DROP
-
-# Cria a CHAIN "SCANNER"
-iptables -N SCANNER
-iptables -A SCANNER -m limit --limit 10/min --limit-burst 3 -j LOG --log-level warning --log-prefix "[firewall] [SCANNER: DROP]"
-iptables -A SCANNER -m limit --limit 10/min --limit-burst 3 -m recent --set --name SUSPEITO -j DROP
-iptables -A SCANNER -m limit --limit 1/min --limit-burst 1 -j LOG --log-level warning --log-prefix "[firewall] [SCANNER: FLOOD!]"
-iptables -A SCANNER -j DROP
-
-#--- Bloqueios
-
-# Rejeita os restos de pacotes após fechar o torrent (subistitua 12300 pela porta do seu torrent)
-iptables -A INPUT -p tcp --dport 12300 -j REJECT
-iptables -A INPUT -p udp --dport 12300 -j DROP
-
-# Manda os pacotes SYN suspeitos (não liberados acima) para a chain "SYN"
-iptables -A INPUT -p tcp --syn -m state --state NEW -j SYN
-
-# Adicionando regras para CHAIN "SCANNER"
-iptables -A INPUT -p tcp --tcp-flags ALL NONE -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL ALL -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL ACK -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL SYN,ACK -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,PSH,URG -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL PSH,URG,FIN -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL URG,PSH,FIN -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL FIN,SYN -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j SCANNER
-iptables -A INPUT -p tcp --tcp-flags ALL FIN -j SCANNER
-
-# Descarta pacotes inválidos
-iptables -A INPUT -m state --state INVALID -j DROP
-
-#bloqueia portas
-
-
-iptables -A INPUT -p tcp --dport=20 -j DROP
-iptables -A INPUT -p udp --dport=20 -j DROP
-iptables -A INPUT -p tcp --dport=21 -j DROP
-iptables -A INPUT -p udp --dport=21 -j DROP
-iptables -A INPUT -p tcp --dport=22 -j DROP
-iptables -A INPUT -p udp --dport=22 -j DROP
-iptables -A INPUT -p tcp --dport=23 -j DROP
-iptables -A INPUT -p udp --dport=23 -j DROP
-iptables -A INPUT -m recent --update --name SUSPEITO -m limit --limit 10/min --limit-burst 3 -j LOG --log-level warning --log-prefix "[firewall] [suspeito]"
-iptables -A INPUT -m limit --limit 10/min --limit-burst 3 -m recent --set --name SUSPEITO -j DROP
-iptables -A INPUT -j DROP
-}
-
-function IniciaFirewall(){
-
- if limpatabelas
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m] "
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if ativaprotecao
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if politicaspadrao
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if permitirloop
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if dns
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if criachain
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
-
-echo -n "iniciando firewall ........................................ "
-echo -e  -n "[\033[01;32m  OK  \033[01;37m]"
-echo
-
-}
-
-function ParaFirewall(){
-
-echo
- if LimpaRegras
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m] "
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if AtivaPing
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- if DesativaProtecao
-  then
-   echo -e "[\033[01;32m  OK  \033[01;37m]"
-  else
-   echo -e "[\033[01;31m  Erro  \033[01;37m]"
- fi
- # Lista de Funções executadas
- #LimpaRegras
- #AtivaPing
- #DesativaProtecao
- echo
-}
-
 
 
 case $1 in
