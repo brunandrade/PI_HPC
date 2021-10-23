@@ -67,7 +67,7 @@ while true; do
 		   fi
 		   ;;
 		2 ) 
-		   dialog --yesno 'Deseja instalar o IPTABLES?' 0 0
+		   dialog --yesno 'Deseja realizar a instalação do IPTABLES?' 0 0
 
 		   if [ $? = 0 ]; then
         		if ! apt-get install iptables
