@@ -53,7 +53,7 @@ while true; do
 		   echo "programa encerrado"
 		   ;;
 		1 )
-		   dialog --yesno 'Deseja instalar o SQUID3?' 0 0
+		   dialog --yesno 'Deseja realizar a instalação do SQUID3?' 0 0
 
 		   if [ $? = 0 ]; then
         		if ! apt-get install squid3
